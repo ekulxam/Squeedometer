@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.6-SNAPSHOT'
+	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
 
@@ -73,8 +73,7 @@ publishing {
 	}
 
 	// select the repositories you want to publish to
-	repositories {
-		// uncomment to publish to the local maven
+	repositories {// uncomment to publish to the local maven
 		// mavenLocal()
 	}
 }

@@ -7,6 +7,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import squeek.squeedometer.config.ConfigWrapper;
@@ -14,10 +15,6 @@ import squeek.squeedometer.config.SqueedometerConfig.Position;
 
 @Environment(EnvType.CLIENT)
 public class SqueedometerHud {
-    
-    // Vars
-    private MinecraftClient client;
-    private TextRenderer textRenderer;
 
     private int color = ConfigWrapper.config.textColor;
     private int vertColor = ConfigWrapper.config.textColor;
@@ -26,20 +23,23 @@ public class SqueedometerHud {
     private float tickCounter = 0.0f;
 
     public void draw(DrawContext context, RenderTickCounter tickCounter) {
-        MatrixStack matrixStack = context.getMatrices();
-        this.client = MinecraftClient.getInstance();
-        this.textRenderer = client.textRenderer;
+        // Vars
+        MinecraftClient client = MinecraftClient.getInstance();
+        TextRenderer textRenderer = client.textRenderer;
 
+        if (client.player == null) {
+            return;
+        }
         // Calculating Speed
         Vec3d playerPosVec = client.player.getPos();
-        double travelledX = playerPosVec.x - client.player.prevX;
-        double travelledZ = playerPosVec.z - client.player.prevZ;
-        double currentSpeed = (double)MathHelper.sqrt((float)(travelledX * travelledX + travelledZ * travelledZ));
-        double currentVertSpeed = playerPosVec.y - client.player.prevY;
+        double travelledX = playerPosVec.x - client.player.lastX;
+        double travelledZ = playerPosVec.z - client.player.lastZ;
+        double currentSpeed = MathHelper.sqrt((float)(travelledX * travelledX + travelledZ * travelledZ));
+        double currentVertSpeed = playerPosVec.y - client.player.lastY;
 
         if (ConfigWrapper.config.changeColors) {
             // Every tick determine if speeds are increasing or decreasing and set color accordingly   
-            this.tickCounter += tickCounter.getTickDelta(false);
+            this.tickCounter += tickCounter.getTickProgress(false);
             if (this.tickCounter >= (float) ConfigWrapper.config.tickInterval) {
                 if (currentSpeed < lastFrameSpeed) {
                     color = ConfigWrapper.config.deceleratingColor;
@@ -73,9 +73,9 @@ public class SqueedometerHud {
             currentSpeedText = SpeedCalculator.speedText(currentSpeed, ConfigWrapper.config.speedUnit);
         }
         // Calculate text position
-        int horizWidth = this.textRenderer.getWidth(currentSpeedText);
-        int vertWidth = this.textRenderer.getWidth(currentVertSpeedText);
-        int height = this.textRenderer.fontHeight;
+        int horizWidth = textRenderer.getWidth(currentSpeedText);
+        int vertWidth = textRenderer.getWidth(currentVertSpeedText);
+        int height = textRenderer.fontHeight;
         int paddingX = 2;
         int paddingY = 2;
         int marginX = 4;
@@ -128,9 +128,12 @@ public class SqueedometerHud {
             }
         }
 
+        context.createNewRootLayer();
         // Render the text
-        context.drawTextWithShadow(this.textRenderer, currentVertSpeedText, vertLeft, top - 10, vertColor);
-        context.drawTextWithShadow(this.textRenderer, currentSpeedText, left, top, color);
+        context.drawTextWithShadow(textRenderer, currentVertSpeedText, vertLeft, top - 10, vertColor);
+        context.drawTextWithShadow(textRenderer, currentSpeedText, left, top, color);
+
+        context.fill(left, top, left + 10, top + 10, Colors.WHITE);
 
         return;
     }
