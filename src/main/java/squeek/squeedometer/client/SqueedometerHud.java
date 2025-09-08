@@ -7,7 +7,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import squeek.squeedometer.config.ConfigWrapper;
@@ -128,13 +130,8 @@ public class SqueedometerHud {
             }
         }
 
-        context.createNewRootLayer();
         // Render the text
-        context.drawTextWithShadow(textRenderer, currentVertSpeedText, vertLeft, top - 10, vertColor);
-        context.drawTextWithShadow(textRenderer, currentSpeedText, left, top, color);
-
-        context.fill(left, top, left + 10, top + 10, Colors.WHITE);
-
-        return;
+        context.drawTextWithShadow(textRenderer, currentVertSpeedText, vertLeft, top - 10, ColorHelper.fullAlpha(color));
+        context.drawTextWithShadow(textRenderer, currentSpeedText, left, top, ColorHelper.fullAlpha(color));
     }
 }

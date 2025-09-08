@@ -14,8 +14,6 @@ import squeek.squeedometer.config.ConfigWrapper;
 public class InGameHudMixin {
     @Inject(at = @At("TAIL"), method = "render")
     private void renderSqueedometerHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        if (ConfigWrapper.config.enabled) {
-            Squeedometer.squeedometerHud.draw(context, tickCounter);
-        }
+
     }
 }
