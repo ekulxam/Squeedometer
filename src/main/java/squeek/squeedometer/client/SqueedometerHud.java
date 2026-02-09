@@ -33,7 +33,7 @@ public class SqueedometerHud {
             return;
         }
         // Calculating Speed
-        Vec3d playerPosVec = client.player.getPos();
+        Vec3d playerPosVec = client.player.getEntityPos();
         double travelledX = playerPosVec.x - client.player.lastX;
         double travelledZ = playerPosVec.z - client.player.lastZ;
         double currentSpeed = MathHelper.sqrt((float)(travelledX * travelledX + travelledZ * travelledZ));
